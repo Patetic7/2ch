@@ -1,17 +1,21 @@
-import time
+import logging
 import os
 import re
-import logging
 import sys
+import time
 from urllib.parse import urljoin
 
 import httpx
 from bs4 import BeautifulSoup
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%d-%m-%Y %H:%M:%S')
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%d-%m-%Y %H:%M:%S",
+)
 logger = logging.getLogger(__name__)
 
-VALID_THREAD_REGEX = r"^https?://2ch\.[a-z]{2,5}/[a-z]+/res/\d+\.html$"
+VALID_THREAD_REGEX = r"^https?://(?:2ch\.[a-z]{2,5}/[a-z]+/res/\d+\.html|arhivach\.[a-z]{2,5}/thread/\d+/?)$"
 
 MEDIA_TYPES = {
     "img": ["jpg", "jpeg", "png", "gif", "webp"],
@@ -80,8 +84,14 @@ def main():
         sys.exit(1)
 
     output_path = sys.argv[1]
-    if not output_path or not os.path.exists(output_path) or not os.path.isdir(output_path):
-        logger.error("Путь к папке сохранения не указан, невалидный или такой папки не существует")
+    if (
+        not output_path
+        or not os.path.exists(output_path)
+        or not os.path.isdir(output_path)
+    ):
+        logger.error(
+            "Путь к папке сохранения не указан, невалидный или такой папки не существует"
+        )
         sys.exit(1)
 
     media_type = sys.argv[2]
